@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="curator" class="org.apache.curator.framework.CuratorFrameworkFactory"
+		factory-method="newClient" init-method="start">
+		<constructor-arg index="0" value="127.0.0.1:2181" />
+		<constructor-arg index="1" value="30000" />
+		<constructor-arg index="2" value="8000" />
+		<constructor-arg index="3">
+			<bean class="org.apache.curator.retry.ExponentialBackoffRetry">
+				<constructor-arg index="0" value="1000" /> 
+				<constructor-arg index="1" value="3" /> 
+			</bean>
+		</constructor-arg>
+	</bean>
+	
+	<!-- <bean id="zookeeperClient" class="org.apache.curator.CuratorZookeeperClient">
+		<constructor-arg index="0" value="127.0.0.1:2181" />
+		<constructor-arg index="1" value="30000" />sessionTimeoutMs
+		<constructor-arg index="2" value="8000" />connectionTimeoutMs
+		<constructor-arg index="3">
+			<ref bean="curatorListener"/>
+		</constructor-arg>
+		<constructor-arg index="4">
+			<bean class="org.apache.curator.retry.ExponentialBackoffRetry">
+				<constructor-arg index="0" value="1000" /> Sleep time between retries
+				<constructor-arg index="1" value="3" /> Max no of times to retry
+			</bean>
+		</constructor-arg>
+	</bean>
+	 -->
+	<bean id="curatorListener" class="com.nisum.zookeeper.config.NodeChangeCuratorListener"/>
+	
+	<bean id="zookeeperPropertySource" class="com.nisum.zookeeper.config.ZookeeperPropertySource">
+		<constructor-arg name="context" value="/legacy" />
+		<constructor-arg name="source" ref="curator" />
+		<constructor-arg name="listener" ref="curatorListener"></constructor-arg>
+	</bean>
+
+	<bean class="com.nisum.zookeeper.config.ZookeeperPropertySourcesConfigurer">
+		<property name="propertySources">
+			<list>
+				<ref bean="zookeeperPropertySource" />
+				<!-- <bean class="org.springframework.core.io.support.ResourcePropertySource"> 
+					<constructor-arg value="classpath:default-config.properties" /> </bean> -->
+			</list>
+		</property>
+	</bean>
+
+</beans>
