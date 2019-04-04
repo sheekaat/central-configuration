@@ -39,6 +39,7 @@ class ZookeeperXmlConfig {
 		System.out.println(mybean.getCloud());
 		System.out.println(mybean.getZookeeper());
 	}
+	hisdfgsdfg
 
 	private ApplicationContext createAppContext() {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
